@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, and_
 
 from database import new_session, WellOrm, BrigOrm
 from schemas import SWell, SWellAdd, SBrig, SBrigAdd
@@ -42,6 +42,20 @@ class WellRepository:
             well_models = result.scalars().all()
             well_schemas = [SWell.model_validate(well_model) for well_model in well_models]
             return well_schemas
+
+    @classmethod
+    async def show_busy_wells(cls) -> list[SWell] | None:
+        """Функция отображения всех Скважин с Бригадами"""
+        async with new_session() as session:
+            query = select(BrigOrm.well_id).filter(and_(BrigOrm.well_id != None), (BrigOrm.date_end == None))
+            result_brig = await session.execute(query)
+            brig_models = result_brig.scalars().all()
+            if brig_models:
+                query = select(WellOrm).where(WellOrm.id.in_(brig_models))
+                result_well = await session.execute(query)
+                well_models = result_well.scalars().all()
+                well_schemas = [SWell.model_validate(well_model) for well_model in well_models]
+                return well_schemas
 
     @classmethod
     async def update_well(cls, well_id: int, new_well: SWellAdd) -> str:

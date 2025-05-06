@@ -24,9 +24,9 @@ class SWellId(BaseModel):
 class SBrigAdd(BaseModel):
     """Модель бригады для добавления"""
     name: str
-    well_id: SWellAdd
-    date_start: datetime
-    date_end: Optional[datetime] = None
+    well_id: int | None #SWellAdd
+    date_start: datetime | None
+    date_end: datetime | None
 
 
 class SBrig(SBrigAdd):

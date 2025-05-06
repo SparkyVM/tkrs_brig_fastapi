@@ -32,6 +32,13 @@ async def get_wells() -> list[SWell]:
     return wells
 
 
+@router.get("/work")
+async def get_busy_wells() -> list[SWell]:
+    """Функция получения списка Скважин с Бригадами"""
+    wells = await WellRepository.show_busy_wells()
+    return wells
+
+
 @router.put("{well_id}")
 async def update_well(well_id: int, well: Annotated[SWellAdd, Depends()],) -> dict:
     """Функция изменения данных Скважины"""
