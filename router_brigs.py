@@ -2,8 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from repository import WellRepository, BrigRepository
-from schemas import SWell, SWellId, SWellAdd, SBrig, SBrigId, SBrigAdd
+from fastapi.responses import JSONResponse
+from repository import BrigRepository
+from schemas import SBrig, SBrigId, SBrigAdd
 
 router = APIRouter(
     prefix="/brigs",
@@ -19,7 +20,7 @@ async def add_brig(brig: Annotated[SBrigAdd, Depends()],) -> SBrigId:
 
 
 @router.post("/{count}")
-async def add_some_brigs(count: int) -> str:
+async def add_some_brigs(count: int) -> JSONResponse:
     """Функция добавления заданного кол-ва Бригад"""
     result = await BrigRepository.add_some(count)
     return result
@@ -33,14 +34,14 @@ async def get_brigs() -> list[SBrig]:
 
 
 @router.put("{brig_id}")
-async def update_brig(brig_id: int, brig: Annotated[SBrigAdd, Depends()],) -> dict:
+async def update_brig(brig_id: int, brig: Annotated[SBrigAdd, Depends()],) -> JSONResponse:
     """Функция изменения данных Бригады"""
     result = await BrigRepository.update_brig(brig_id, brig)
-    return {"message": result}
+    return result
 
 
 @router.delete("{brig_id}")
-async def delete_brig(brig_id: int) -> str:
+async def delete_brig(brig_id: int) -> JSONResponse:
     """Функция удаления Бригады"""
     result = await BrigRepository.delete_one(brig_id)
     return result
